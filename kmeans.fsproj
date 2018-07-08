@@ -6,7 +6,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Vector.fs" />
+    <Compile Include="Logic.fs" />
+    <Compile Include="Kmeans.fs" />
     <Compile Include="Program.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="packages/FSharp.Data/lib/net45/FSharp.Data.dll" />
   </ItemGroup>
 
 </Project>
