@@ -48,28 +48,39 @@ let sse (cls : Clusters) =
                   Array.fold (fun acc ob ->
                           (Vector.DistanceSquared ce ob) + acc ) 0.0 obs) cls
 
-let printCluster (cl : ClusterAndCycle) =
-    let ((ce, obs), currentCycle, maxCycle) = cl
+let silhouette (i : Vector) (cls : ClustersAndCycle) =
+    let (cls', _, _) = cls
+    // Should return just one cluster, so it should be save to concat
+    let obs = [| for cl in cls' do if (Array.contains i (snd cl)) then yield (snd cl) |] |> Array.concat
 
-    let cycle = (maxCycle - currentCycle)
+    // let obss = [| for cl in cls' do if not (Array.contains i (snd cl)) then yield (snd cl) |]
+    let cls'' = [| for cl in cls' do if not (Array.contains i (snd cl)) then yield ((fst cl), (snd cl)) |]
 
-    printfn "Clycles %d, with Centroid: %A\n" cycle ce.Points
-    printfn "Observations assigned to Centroid:\n\n"
+    let a (i : Observation) : float  =
+        let numerator = 1.0
+        let denominator = float(Array.length obs) - 1.0
+        let cl' = Array.filter ((<>) i) obs
+        let sigma = Array.sumBy (Vector.Distance i) cl'
+        numerator / denominator * sigma
 
-    let print a =
-        Array.iter (fun (ob : Observation) -> printfn "%A" ob.Points) a
+    let b (i : Observation) =
+        let numerator = 1.0
+        // let denominator = float(Array.length cls'')
+        let xs = Array.map (fun (ce, obs) -> (1.0 / (float(Array.length obs))) * (Array.sumBy (Vector.Distance i) obs)) cls''
+        Array.min xs
 
-    print obs
-    printf "\n"
+    let s (i : Observation) : float =
+        match (Array.length obs) with
+        | 0 -> 1.0
+        // | i' when i' > 1 -> (snd (b i) - a i) / max (a i) (snd (b i))
+        | i' when i' > 1 -> ((b i) - a i) / max (a i) ((b i))
+        | _ -> failwith "Silhouette was given a negative number"
 
-let printClusters (cls : ClustersAndCycle) =
-    let clusters, currentCycle, maxCycle = cls
-    Array.iter (fun cl -> printCluster (cl,currentCycle,maxCycle) ) clusters
-    sse clusters
+    a i, b i, s i
 
 let computeCentroid (cl : Cluster) : Centroid =
     let (ce,obs) = cl
-    let (zero : Observation) = Vector.Zero ce.Dimensions
+    let (zero : Observation) = Vector.Zero ce.DistanceFunc ce.Dimensions
     let (centroid : Centroid) = Array.fold (fun acc x ->
                                             (Vector.Sum acc x)) zero obs
     centroid.Divide (float centroid.Dimensions)

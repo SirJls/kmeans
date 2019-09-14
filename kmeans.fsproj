@@ -9,6 +9,7 @@
     <Compile Include="Vector.fs" />
     <Compile Include="Logic.fs" />
     <Compile Include="Kmeans.fs" />
+    <Compile Include="Utils.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
