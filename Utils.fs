@@ -7,7 +7,7 @@ open FSharp.Data
 
 let euclideanDistance = EuclideanDistance (fun (Vector v1) (Vector v2) -> sqrt <| (Array.fold2 (fun acc i ii -> ((i - ii) ** 2.0) + acc) 0.0 (snd v1) (snd v2)))
 let manhattanDistance = ManhattanDistance (fun (Vector v1) (Vector v2) -> (Array.fold2 (fun acc i ii -> (abs (i - ii)) + acc) 0.0 (snd v1) (snd v2)))
-let consineDistance = ConsineDistance (fun (Vector v1) (Vector v2) ->
+let consineDistance = CosineDistance (fun (Vector v1) (Vector v2) ->
                                        let sum = Array.fold2 (fun acc i ii -> i * ii) 0.0 (snd v1) (snd v2)
                                        let a = Array.sumBy (fun x -> x ** 2.0) (snd v1) |> sqrt
                                        let b = Array.sumBy (fun x -> x ** 2.0) (snd v2) |> sqrt

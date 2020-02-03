@@ -6,21 +6,21 @@ open System
 type DistanceFunc =
     | EuclideanDistance of (Vector -> Vector -> float)
     | ManhattanDistance of (Vector -> Vector -> float)
-    | ConsineDistance of (Vector -> Vector -> float)
+    | CosineDistance of (Vector -> Vector -> float)
     override x.Equals y =
         match y with
             | :? DistanceFunc as y' ->
                 match (x, y') with
                     | (EuclideanDistance _, EuclideanDistance _) -> true
                     | (ManhattanDistance _, ManhattanDistance _) -> true
-                    | (ConsineDistance _, ConsineDistance _) -> true
+                    | (CosineDistance _, CosineDistance _) -> true
                     | _ -> false
             | _ -> false
     override x.GetHashCode() =
         match x with
             | (EuclideanDistance y) -> 1
             | (ManhattanDistance y) -> 2
-            | (ConsineDistance y) -> 3
+            | (CosineDistance y) -> 3
     interface System.IComparable with
         member x.CompareTo y =
             match y with
@@ -28,7 +28,7 @@ type DistanceFunc =
                     match (x, y') with
                         | (EuclideanDistance _, EuclideanDistance _) -> 1
                         | (ManhattanDistance _, ManhattanDistance _) -> 2
-                        | (ConsineDistance _, ConsineDistance _) -> 3
+                        | (CosineDistance _, CosineDistance _) -> 3
                         | _ -> failwith "wrong type"
                     | _ -> failwith "wrong type"
 
@@ -49,7 +49,7 @@ and Vector = Vector of (DistanceFunc * float[]) with
                 Some (f1)
             | (ManhattanDistance f1, ManhattanDistance f2) ->
                 Some (f1)
-            | (ConsineDistance f1, ConsineDistance f2) ->
+            | (CosineDistance f1, CosineDistance f2) ->
                 Some (f1)
             | _ -> None
     static member Zero (f : DistanceFunc) dimensions = Vector <| (f, Array.create dimensions 0.0)
